@@ -27,4 +27,51 @@ Run Kustomize directly through `kubectl` from inside the `k8s/` directory:
 ```bash
 kubectl apply -k .
 
-replica as 5, and then make a little change in to the java application, change the version v.0.0.2   publication it into docker and change the version and redeploy it
+see i have two repo one is java-application and another is java-deployment , i changed the version in the (java-deployment: java-deployment.yml) using github action by java-application repo , when ever i created a tag that is new realise, the changes happened.
+now I want to put the java-deployment changes in the aws cloud which i created. I created a EC2 instance in aws and put sudo apt-get update
+
+sudo apt-get install -y ca-certificates curl
+
+sudo install -m 0755 -d /etc/apt/keyrings
+
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  -o /etc/apt/keyrings/docker.asc
+
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install -y \
+  docker-ce \
+  docker-ce-cli \
+  containerd.io \
+  docker-buildx-plugin \
+  docker-compose-plugin
+Ensure current user added to docker grouo
+sudo usermod -aG docker $USER
+newgrp docker
+docker ps
+Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s \
+  https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+rm kubectl
+install kind cluster
+curl -Lo ./kind \
+  https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+
+chmod +x ./kind
+
+sudo mv ./kind /usr/local/bin/kind
+check kind version
+kind version, now i want to push that changes in kind cluster using github actions give each and every steps to complete the task
+
+
+

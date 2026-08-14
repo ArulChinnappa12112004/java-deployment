@@ -1,0 +1,34 @@
+name: Deploy To Kind
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy To EC2
+        uses: appleboy/ssh-action@v1.0.3
+
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd ~/java-deployment
+
+            git pull origin main
+
+            kubectl apply -f k8s/
+
+            kubectl rollout restart deployment/java-app -n java-app
+
+            kubectl get pods -n java-app
